@@ -1,6 +1,9 @@
-const { OFF, ERROR, WARN } = require('../const');
+import CONFIGS from '../const/index.mjs';
 
-module.exports = {
+const { OFF, WARN, ERROR } = CONFIGS;
+
+/** @type {import('eslint').Linter.FlatConfig} */
+export default {
   rules: {
     'max-depth': [WARN, 3],
     'max-nested-callbacks': [WARN, 3],

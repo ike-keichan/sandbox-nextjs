@@ -1,9 +1,9 @@
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 import 'the-new-css-reset/css/reset.css';
 
-import { GlobalStyle } from '../src/shared/styles/GlobalStyle';
+import { GlobalStyles } from '../src/shared/styles/GlobalStyles';
 
-import type { Preview } from '@storybook/nextjs';
+import type { Preview } from '@storybook/react';
 
 const preview: Preview = {
   parameters: {
@@ -15,14 +15,14 @@ const preview: Preview = {
       },
     },
     nextjs: {
-      appDirectory: true,
+      appDirectory: false,
     },
   },
 };
 
 export const decorators = [
   withThemeFromJSXProvider({
-    GlobalStyle,
+    GlobalStyles,
   }),
 ];
 

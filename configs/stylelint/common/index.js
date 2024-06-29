@@ -7,7 +7,7 @@ module.exports = {
     // セレクタのネストを２レベルまで許可
     'max-nesting-depth': 2,
     // 指定したCSSプロパティを使用禁止
-    'property-disallowed-list': property_disallowed_list,
+    'property-disallowed-list': ['all', 'background', 'flex', 'font'],
     // セレクタの特定性が前に記述されたセレクタよりも低くなることを禁止
     // stylelint-config-recommendedではtrue
     // 場合によってはnullにしても良さそう。
