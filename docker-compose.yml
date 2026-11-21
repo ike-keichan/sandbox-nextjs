@@ -3,7 +3,7 @@ services:
     build: .
     # 手元のパソコンと同じユーザーで動かす。番号は、Makefile が調べて渡す。
     # root で動かすと、Linux では、作られたファイル（.next など）が root の持ち物になり、手元で消せなくなる。
-    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    user: '${HOST_UID:-1000}:${HOST_GID:-1000}'
     # 止めるときの合図（SIGTERM）が、Node.js まで届くようにする。
     init: true
     volumes:
@@ -17,7 +17,13 @@ services:
       - WATCHPACK_POLLING=true
     healthcheck:
       # トップページが応答するかを確かめる。
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3000').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
       interval: 5s
       timeout: 5s
       retries: 30

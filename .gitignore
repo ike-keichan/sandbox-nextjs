@@ -4,6 +4,9 @@ node_modules/
 # テストの生成物
 coverage/
 
+# Storybook の生成物
+storybook-static/
+
 # Next.js が作るファイル
 .next/
 out/

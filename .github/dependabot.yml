@@ -6,35 +6,35 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: "09:00"
+      time: '09:00'
       timezone: Asia/Tokyo
     groups:
       javascript:
-        patterns: ["*"]
+        patterns: ['*']
     ignore:
       # TypeScript のメジャーバージョンは、検査の道具（typescript-eslint）が対応してから、手で上げる。
       - dependency-name: typescript
-        update-types: ["version-update:semver-major"]
+        update-types: ['version-update:semver-major']
   # Node.js のイメージ（Dockerfile）
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
       day: monday
-      time: "09:00"
+      time: '09:00'
       timezone: Asia/Tokyo
     ignore:
       # Node.js は長期サポート版を使う。メジャーバージョンの更新は、手で行う。
       - dependency-name: node
-        update-types: ["version-update:semver-major"]
+        update-types: ['version-update:semver-major']
   # GitHub Actions のアクション
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
-      time: "09:00"
+      time: '09:00'
       timezone: Asia/Tokyo
     groups:
       actions:
-        patterns: ["*"]
+        patterns: ['*']
