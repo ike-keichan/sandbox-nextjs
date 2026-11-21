@@ -21,8 +21,9 @@ Next.js のプロジェクトを始めるときの土台を、すぐ動く状態
 | ブランチ | ルーター | スタイル | 検査と整形 | 単体テスト |
 | --- | --- | --- | --- | --- |
 | [`main`](https://github.com/ike-keichan/sandbox-nextjs) | App Router | なし | なし | なし |
+| [`example/pages-styled-eslint-jest`](https://github.com/ike-keichan/sandbox-nextjs/tree/example/pages-styled-eslint-jest) | Pages Router | styled-components | ESLint + Prettier | Jest |
 
-`main` には、どの組み合わせでも変わらない、共通の部分だけを入れています。道具を選んだ、そのまま使える形は、`example/` で始まるブランチに置きます。考え方は、[Architecture](./readme/03_ARCHITECTURE.md) の「1. ブランチの考え方」を参照してください。
+`main` には、どの組み合わせでも変わらない、共通の部分だけを入れています。道具を選んだ、そのまま使える形は、`example/` で始まるブランチにあります。`example/` のブランチには、基本の部品（ボタン、リンク、入力欄など）と、Storybook も入っています。考え方は、[Architecture](./readme/03_ARCHITECTURE.md) の「1. ブランチの考え方」を参照してください。
 
 `README.md` と、`readme/` の番号つきの文書は、どのブランチでも同じ内容です。`example/` で始まるブランチには、そのブランチの説明（`readme/EXAMPLE_*.md`）が入っています。
 
