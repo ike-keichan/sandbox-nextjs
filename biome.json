@@ -1,0 +1,128 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["**", "!pnpm-lock.yaml", "!**/*.md", "!**/*.yml", "!**/*.yaml"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingCommas": "all",
+      "semicolons": "always"
+    }
+  },
+  "tailwind": {
+    "stylesheet": "./src/shared/styles/globals.css",
+    "mergeFunctions": ["classNames"]
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "next": "recommended",
+      "react": "recommended",
+      "test": "recommended",
+      "tailwind": "recommended"
+    },
+    "rules": {
+      "preset": "recommended",
+      "nursery": {
+        "useTailwindSortedClasses": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "useTailwindStaticClassStrings": "error",
+        "noTailwindRawColors": "error"
+      },
+      "suspicious": {
+        "noConsole": "warn"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "warn"
+      },
+      "style": {
+        "useImportType": "error"
+      }
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/components/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["~/features/**", "~/app/**"],
+                    "message": "部品（components）から、ページ（app）や、ページの中身（features）を読み込まない。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["~/app/**"],
+                    "message": "ページの中身（features）から、ページ（app）を読み込まない。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/shared/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["~/components/**", "~/features/**", "~/app/**"],
+                    "message": "共通のもの（shared）から、部品やページを読み込まない。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

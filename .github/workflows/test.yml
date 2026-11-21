@@ -25,8 +25,14 @@ jobs:
         run: make setup
       - name: Check the types
         run: make js/typecheck
+      - name: Check the code
+        run: make js/check
+      - name: Run the tests
+        run: make js/test
       - name: Build for production
         run: make js/build
+      - name: Build Storybook
+        run: make storybook/build
       - name: Start the development server
         run: make upd
       - name: Call the running server

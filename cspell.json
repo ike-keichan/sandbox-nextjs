@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "dictionaries": [
+    "en_US",
+    "typescript",
+    "node",
+    "html",
+    "css",
+    "npm",
+    "fonts",
+    "product",
+    "develop"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "product",
+      "path": "./configs/cspell/product.txt"
+    },
+    {
+      "name": "develop",
+      "path": "./configs/cspell/develop.txt"
+    }
+  ],
+  "ignorePaths": [
+    "node_modules",
+    ".next",
+    "coverage",
+    "storybook-static",
+    "pnpm-lock.yaml",
+    "cspell.json"
+  ],
+  "ignoreRegExpList": ["[\\u3040-\\u30ff\\u3400-\\u9fff\\uff00-\\uffef]+"]
+}

@@ -61,3 +61,26 @@ node/login:
 # コンテナのnodeのrepl
 node/repl:
 	docker compose run --rm app node
+
+
+## このブランチで足したコマンド
+.PHONY: js/check js/fix js/test js/test-coverage storybook storybook/build
+
+# コードチェック（Biome による書式と規則の検査、つづり）
+js/check:
+	docker compose run --rm app pnpm check
+# コード修正（自動で直せるものを直す）
+js/fix:
+	docker compose run --rm app pnpm fix
+# テスト
+js/test:
+	docker compose run --rm app pnpm test
+# テスト（テストが通ったコードの割合も調べる）
+js/test-coverage:
+	docker compose run --rm app pnpm test:coverage
+# Storybook の起動（http://localhost:6006）
+storybook:
+	docker compose run --rm --publish 127.0.0.1:6006:6006 app pnpm storybook
+# Storybook のビルド（見本が、すべて表示できることの確認）
+storybook/build:
+	docker compose run --rm app pnpm build-storybook

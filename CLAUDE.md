@@ -169,3 +169,78 @@ make upd && bash scripts/smoke.sh
 - 動作を確かめていない変更を、確かめたことにしない。
 - 頼まれていない機能の追加や、大きな書き換えをしない。気づいた問題は、直す前に伝える。
 - 生成物をコミットしない。
+
+---
+
+# このブランチ（example/app-tailwind-biome-vitest）の決まり
+
+ここから下は、このブランチだけの決まりである。道具の説明は、`readme/EXAMPLE_APP_TAILWIND_BIOME_VITEST.md` にある。
+
+上の「`main` に入れないもの」は、`main` についての決まりである。このブランチには、スタイル、検査と整形、単体テストの道具と、UI の部品が入っている。
+
+## 変更したら、必ず確かめる
+
+`main` の確認に加えて、次を実行する。
+
+```sh
+make js/fix
+make js/check
+make js/test
+make storybook/build
+```
+
+## ページ（App Router）
+
+- ページのファイル（`src/app/**/page.tsx`）には、中身の部品の呼び出しだけを書く。中身は、`src/features/<ページの名前>/` に置く。
+- 読み込みの向きは、`app` → `features` → `components` → `shared` の一方向にする。Biome が検査する（`biome.json` の `overrides`）。フォルダを足したら、`overrides` にも、決まりを足す。
+- `'use client'` は、`src/features/` の、操作に反応する部品に付ける。`src/components/` の部品には、付けない（サーバーの側でも、ブラウザの側でも使えるようにしておく）。部品の中で `useState` などが必要になったら、その部品にだけ付ける。
+
+## 部品
+
+- 部品は、`src/components/<部品の名前>/` に、5つのファイルで作る（本体、`.types.ts`、`.test.tsx`、`.stories.tsx`、`index.ts`）。スタイルは、本体に、Tailwind CSS のクラスで書く。
+- 使う側は、フォルダの名前で読み込む（`~/components/Button`）。中のファイルを、直接読み込まない。
+- もとの要素の属性を、そのまま渡せるようにする（`ComponentPropsWithoutRef<'button'>` を型に含めて、残りを要素に渡す）。
+- 見た目の種類は、`variant` という名前で受け取る。
+- キーボードだけで操作できるようにする。フォーカスが当たったときの枠線（`:focus-visible`）を、必ず付ける。
+- 読み上げソフトに伝わるようにする。入力欄には、必ず名前（`label`）を付ける。説明やエラーは、`aria-describedby` で結び付ける。見た目だけの要素（`div` に `onClick` を付けるなど）で、ボタンやリンクを作らない。
+- 押せる場所は、高さを 44px 以上にする。
+- 色は、`src/shared/styles/globals.css` の `@theme` に書いた色のクラス（`bg-primary`、`text-error` など）を使う。色の値（`bg-[#0b57d0]`）や、Tailwind CSS に最初からある色（`bg-blue-600`）を、部品に直接書かない。色を足すときは、文字と背景の組み合わせで、読みやすさの基準（コントラスト比 4.5 以上）を満たすことを確かめる。
+
+## スタイル（Tailwind CSS）
+
+- スタイルは、Tailwind CSS のクラスで書く。CSS のファイルを、部品ごとに作らない。`style` 属性も使わない。
+- クラスの名前は、省略せずに、そのままの形で書く。文字をつなげて、クラスの名前を作らない（`'bg-' + color` は、CSS にならない）。種類ごとのスタイルは、`variant` の値をキーにしたオブジェクトに、完全な名前で書く。
+- 長いクラスの並びは、部品の上で、定数に入れる。共通のスタイル（`baseClassName`）と、種類ごとのスタイル（`variantClassNames`）を分ける。
+- 複数のクラスを付けるときは、`~/shared/utils/classNames` の `classNames` を使う。
+- 部品は、`className` を受け取って、いちばん外側の要素に、自分のクラスとあわせて付ける。
+- 色を足すときは、`src/shared/styles/globals.css` の `@theme` に、`--color-<名前>` の形で足す。
+- 決まった値で表せるものは、`[...]` で値を直接書かない（`min-h-11` を使い、`min-h-[44px]` と書かない）。
+- フォーカスの枠線は、`focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary` を付ける。
+- クラスの並び順は、Biome に任せる（`make js/fix`）。手で並べ替えない。
+- `@apply` は、使わない。同じクラスの並びを、何度も書くことになったら、部品にする。
+
+## 検査（Biome）
+
+- 整形と検査は、Biome で行う。ESLint、Prettier、Stylelint を、このブランチに足さない。
+- 規則を変えるときは、`biome.json` で行う。コードの中に、無効にするコメント（`biome-ignore`）を書くのは、その1か所だけの例外のときに限り、理由を必ず添える。
+- 設定の書き方は、Biome のバージョンで変わる。変えるときは、記憶に頼らず、`biome.json` の先頭の `$schema` の URL にある定義を見て、規則の名前と置き場所を確かめる。変えたあとは、わざと違反を書いて、規則が働くことを確かめる。
+- YAML は、Biome の対象から外している（`main` と、ほかのブランチの書式に合わせるため）。
+- 辞書にない英単語は、`configs/cspell/` の下のファイルに登録する。製品に関する単語は `product.txt`、開発に関する単語は `develop.txt` に書く。
+
+## テスト（Vitest、Testing Library）
+
+- テストは、部品と同じフォルダに、`<部品の名前>.test.tsx` という名前で置く。
+- テストの関数（`describe`、`it`、`expect`、`vi`）は、`vitest` から、毎回 `import` する。
+- 要素は、役割と名前で探す（`getByRole`）。クラスの名前や、`data-testid` で探さない。
+- 操作は、`userEvent` で行う。`fireEvent` は使わない。
+- テストの名前は、日本語で、「どうすると、どうなるか」を書く。
+- 部品を足したら、表示、操作、キーボードでの操作、無効のとき、種類ごとに付くクラスを確かめる。
+- スタイルは、付くクラスの名前を、`toHaveClass` で確かめる。種類を表す、代表のクラス（`bg-primary` など）だけを確かめる。すべてのクラスを、並べて確かめない。
+- 読み上げ用の名前を確かめるときは、空白の有無まで、厳密に比べない（正規表現を使う）。
+- Vite が警告を出したら、放置せずに、内容に従って直す。
+
+## Storybook
+
+- 見本は、部品と同じフォルダに、`<部品の名前>.stories.tsx` という名前で置く。
+- 部品の種類と状態ごとに、見本を1つずつ作る。
+- 見本の名前に、JavaScript に最初からある名前（`Error` など）を使わない。
