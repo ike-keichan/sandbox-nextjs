@@ -1,0 +1,55 @@
+/* すべてのページに適用するスタイル */
+
+/* 色の定数
+   文字と背景の組み合わせは、読みやすさの基準（コントラスト比 4.5 以上）を満たすものにしている。 */
+:root {
+  /* 文字 */
+  --color-text: #1f1f1f;
+
+  /* 補足の文字 */
+  --color-text-sub: #5f6368;
+
+  /* 背景 */
+  --color-background: #fff;
+
+  /* 枠線 */
+  --color-border: #747775;
+
+  /* 主となる色（ボタン、リンク） */
+  --color-primary: #0b57d0;
+
+  /* 主となる色の、ポインタを載せたとき */
+  --color-primary-hover: #0842a0;
+
+  /* 主となる色の上に載せる文字 */
+  --color-on-primary: #fff;
+
+  /* 主となる色の、薄い背景 */
+  --color-primary-surface: #e8f0fe;
+
+  /* 成功 */
+  --color-success: #146c2e;
+
+  /* 成功の、薄い背景 */
+  --color-success-surface: #e6f4ea;
+
+  /* エラー */
+  --color-error: #b3261e;
+
+  /* エラーの、薄い背景 */
+  --color-error-surface: #fce8e6;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: system-ui, sans-serif;
+  line-height: 1.7;
+  margin: 0;
+}

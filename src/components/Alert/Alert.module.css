@@ -1,0 +1,31 @@
+.root {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-radius: 4px;
+  color: var(--color-text);
+  padding: 12px 16px;
+}
+
+.info {
+  background-color: var(--color-primary-surface);
+  border-color: var(--color-primary);
+}
+
+.success {
+  background-color: var(--color-success-surface);
+  border-color: var(--color-success);
+}
+
+.error {
+  background-color: var(--color-error-surface);
+  border-color: var(--color-error);
+}
+
+.title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.body {
+  font-size: 0.875rem;
+}

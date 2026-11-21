@@ -1,0 +1,26 @@
+.root {
+  border-radius: 2px;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.root:hover {
+  color: var(--color-primary-hover);
+  text-decoration-thickness: 2px;
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 画面には表示せず、読み上げソフトにだけ伝える文字 */
+.visuallyHidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

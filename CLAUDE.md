@@ -168,3 +168,73 @@ make upd && bash scripts/smoke.sh
 - 動作を確かめていない変更を、確かめたことにしない。
 - 頼まれていない機能の追加や、大きな書き換えをしない。気づいた問題は、直す前に伝える。
 - 生成物をコミットしない。
+
+---
+
+# このブランチ（example/app-cssmodules-eslint-vitest）の決まり
+
+ここから下は、このブランチだけの決まりである。道具の説明は、`readme/EXAMPLE_APP_CSSMODULES_ESLINT_VITEST.md` にある。
+
+上の「`main` に入れないもの」は、`main` についての決まりである。このブランチには、スタイル、検査と整形、単体テストの道具と、UI の部品が入っている。
+
+## 変更したら、必ず確かめる
+
+`main` の確認に加えて、次を実行する。
+
+```sh
+make js/fix
+make js/check
+make js/test
+make storybook/build
+```
+
+## ページ（App Router）
+
+- ページのファイル（`src/app/**/page.tsx`）には、中身の部品の呼び出しだけを書く。中身は、`src/features/<ページの名前>/` に置く。
+- 読み込みの向きは、`app` → `features` → `components` → `shared` の一方向にする。ESLint が検査する。
+- `'use client'` は、`src/features/` の、操作に反応する部品に付ける。`src/components/` の部品には、付けない（サーバーの側でも、ブラウザの側でも使えるようにしておく）。部品の中で `useState` などが必要になったら、その部品にだけ付ける。
+
+## 部品
+
+- 部品は、`src/components/<部品の名前>/` に、6つのファイルで作る（本体、`.module.css`、`.types.ts`、`.test.tsx`、`.stories.tsx`、`index.ts`）。
+- 使う側は、フォルダの名前で読み込む（`~/components/Button`）。中のファイルを、直接読み込まない。
+- もとの要素の属性を、そのまま渡せるようにする（`ComponentPropsWithoutRef<'button'>` を型に含めて、残りを要素に渡す）。
+- 見た目の種類は、`variant` という名前で受け取る。
+- キーボードだけで操作できるようにする。フォーカスが当たったときの枠線（`:focus-visible`）を、必ず付ける。
+- 読み上げソフトに伝わるようにする。入力欄には、必ず名前（`label`）を付ける。説明やエラーは、`aria-describedby` で結び付ける。見た目だけの要素（`div` に `onClick` を付けるなど）で、ボタンやリンクを作らない。
+- 押せる場所は、高さを 44px 以上にする。
+- 色は、`src/shared/styles/globals.css` の変数（`var(--color-primary)` など）を使う。色の値を、部品に直接書かない。色を足すときは、文字と背景の組み合わせで、読みやすさの基準（コントラスト比 4.5 以上）を満たすことを確かめる。
+
+## スタイル（CSS Modules）
+
+- スタイルは、部品と同じフォルダの `<部品の名前>.module.css` に書く。`style` 属性で、直接書かない。
+- クラスの名前は、キャメルケースで書く（`errorMessage`）。部品のいちばん外側の要素は、`root` にする。
+- 見た目の種類のクラスは、`variant` の値と同じ名前にする（`primary`、`secondary`）。本体では、`styles[variant]` で付ける。
+- 複数のクラスを付けるときは、`~/shared/utils/classNames` の `classNames` を使う。文字列を、手でつなげない。
+- 部品は、`className` を受け取って、いちばん外側の要素に、自分のクラスとあわせて付ける。使う側が、余白などを足せるようにするためである。
+- プロパティは、アルファベット順に書く。`!important` と、まとめて指定するプロパティ（`background`、`font`、`flex`、`all`）は使わない。Stylelint が検査する。
+- 全体に適用するスタイルと、色の変数は、`src/shared/styles/globals.css` に書く。
+
+## 検査
+
+- 規則を無効にするときは、`configs/eslint/` の該当するファイルで行い、理由をコメントで書く。コードの中に、無効にするコメント（`eslint-disable`）を書くのは、その1か所だけの例外のときに限る。
+- ESLint の自動修正（`make js/fix`）は、変数の名前を書き換えることがある。実行したあとは、差分を確かめる。
+- 辞書にない英単語は、`configs/cspell/` の下のファイルに登録する。製品に関する単語は `product.txt`、開発に関する単語は `develop.txt` に書く。
+
+## テスト（Vitest、Testing Library）
+
+- テストは、部品と同じフォルダに、`<部品の名前>.test.tsx` という名前で置く。
+- テストの関数（`describe`、`it`、`expect`、`vi`）は、`vitest` から、毎回 `import` する。
+- 要素は、役割と名前で探す（`getByRole`）。クラスの名前や、`data-testid` で探さない。
+- 操作は、`userEvent` で行う。`fireEvent` は使わない。
+- テストの名前は、日本語で、「どうすると、どうなるか」を書く。
+- 部品を足したら、表示、操作、キーボードでの操作、無効のとき、種類ごとに付くクラスを確かめる。
+- スタイルは、付くクラスの名前を、`toHaveClass` で確かめる。テストでは、クラスの名前が、CSS に書いたとおりの名前になる（`vitest.config.mts` で設定している）。
+- 読み上げ用の名前を確かめるときは、空白の有無まで、厳密に比べない（正規表現を使う）。
+- Vite が警告を出したら、放置せずに、内容に従って直す。
+
+## Storybook
+
+- 見本は、部品と同じフォルダに、`<部品の名前>.stories.tsx` という名前で置く。
+- 部品の種類と状態ごとに、見本を1つずつ作る。
+- 見本の名前に、JavaScript に最初からある名前（`Error` など）を使わない。
