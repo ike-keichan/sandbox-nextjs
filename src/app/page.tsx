@@ -1,10 +1,10 @@
-/**
- * トップページ
- */
-const HomePage = () => (
-  <main>
-    <h1>hello world!</h1>
-  </main>
-);
+import { HomePage } from '~/features/home/HomePage';
 
-export default HomePage;
+/**
+トップページ
+
+ページのファイルには、中身の部品の呼び出しだけを書く。
+*/
+const IndexPage = () => <HomePage />;
+
+export default IndexPage;

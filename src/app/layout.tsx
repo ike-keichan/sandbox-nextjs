@@ -1,3 +1,5 @@
+import '~/shared/styles/globals.css';
+
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
@@ -12,8 +14,8 @@ type RootLayoutProps = {
 };
 
 /**
- * すべてのページに共通の枠組み
- */
+すべてのページに共通の枠組み
+*/
 const RootLayout = ({ children }: RootLayoutProps) => (
   <html lang="ja">
     <body>{children}</body>
