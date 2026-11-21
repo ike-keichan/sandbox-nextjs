@@ -125,7 +125,7 @@ make upd && bash scripts/smoke.sh
 
 ### バージョン
 
-- Node.js は、長期サポート版を使う。バージョンは、`Dockerfile`、`.node-version`、`package.json` の `engines` の3か所に書いてある。変えるときは、3か所をそろえる。
+- Node.js は、LTS を使う。バージョンは、`Dockerfile`、`.node-version`、`package.json` の `engines` の3か所に書いてある。変えるときは、3か所をそろえる。
 - pnpm のバージョンは、`Dockerfile` と、`package.json` の `packageManager` の2か所に書いてある。変えるときは、2か所をそろえる。
 - TypeScript は、コードの検査の道具（typescript-eslint）が対応しているメジャーバージョンまでにする。
 - バージョンを変えたら、`README.md` の「Tool Versions」の表も直す。
