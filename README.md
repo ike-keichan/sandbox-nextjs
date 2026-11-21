@@ -22,6 +22,7 @@ Next.js のプロジェクトを始めるときの土台を、すぐ動く状態
 | --- | --- | --- | --- | --- |
 | [`main`](https://github.com/ike-keichan/sandbox-nextjs) | App Router | なし | なし | なし |
 | [`example/pages-styled-eslint-jest`](https://github.com/ike-keichan/sandbox-nextjs/tree/example/pages-styled-eslint-jest) | Pages Router | styled-components | ESLint + Prettier | Jest |
+| [`example/app-cssmodules-eslint-vitest`](https://github.com/ike-keichan/sandbox-nextjs/tree/example/app-cssmodules-eslint-vitest) | App Router | CSS Modules | ESLint + Prettier | Vitest |
 
 `main` には、どの組み合わせでも変わらない、共通の部分だけを入れています。道具を選んだ、そのまま使える形は、`example/` で始まるブランチにあります。`example/` のブランチには、基本の部品（ボタン、リンク、入力欄など）と、Storybook も入っています。考え方は、[Architecture](./readme/03_ARCHITECTURE.md) の「1. ブランチの考え方」を参照してください。
 
