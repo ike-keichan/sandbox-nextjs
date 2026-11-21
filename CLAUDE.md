@@ -140,6 +140,7 @@ make upd && bash scripts/smoke.sh
 ### 生成物と、秘密の情報
 
 - `.next/`、`next-env.d.ts`、`node_modules/`、`coverage/` などの生成物を、コミットしない。新しい道具を入れたら、その生成物が `.gitignore` に入っているかを、コミットの前に確かめる（`git status` で、意図しないファイルが出ていないかを見る）。
+- `git add -A` の前に、必ず `git status` を見る。ブランチによって `.gitignore` の内容が違うので、ブランチを切り替えた直後は、別のブランチの生成物（`storybook-static/` など）が、追加の対象として出てくることがある。道具の生成物は、その道具が入っていない `main` の `.gitignore` にも、書いておく。
 - パスワードや鍵を、リポジトリに入れない。必要になったら、`.env` を使う（`.gitignore` に入れてある）。
 - ブラウザの側で使う環境変数（`NEXT_PUBLIC_` で始まるもの）は、誰でも読める。秘密の情報を入れない。
 
