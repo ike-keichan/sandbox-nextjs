@@ -223,7 +223,7 @@ $ make js/build
 
 | 対象 | 方針 | 上げるときに直す場所 |
 | --- | --- | --- |
-| Node.js | 長期サポート版（LTS）を使います。偶数のバージョンが、長期サポート版になります。Dependabot は、メジャーバージョンの更新を知らせない設定にしています | `Dockerfile` のイメージ、`.node-version`、`package.json` の `engines` の3か所 |
+| Node.js | LTS を使います。偶数のバージョンが、LTS になります。Dependabot は、メジャーバージョンの更新を知らせない設定にしています | `Dockerfile` のイメージ、`.node-version`、`package.json` の `engines` の3か所 |
 | pnpm | 版を固定しています。Dependabot の対象ではないので、手で上げます | `Dockerfile` の `pnpm@...` と、`package.json` の `packageManager` の2か所 |
 | TypeScript | コードの検査の道具（typescript-eslint）が対応している、最新のメジャーバージョンを使います。Dependabot は、メジャーバージョンの更新を知らせない設定にしています | `package.json` |
 | Next.js、React、そのほかのパッケージ | 版を固定しています。更新は、Dependabot に任せます | `package.json` |
