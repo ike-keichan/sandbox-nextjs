@@ -1,4 +1,4 @@
-# nextjs-sandbox
+# sandbox-nextjs
 
 Next.js を試すための練習用のプロジェクト。ESLint、Stylelint、Jest、Storybook の設定を含む。
 
