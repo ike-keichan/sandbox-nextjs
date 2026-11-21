@@ -1,6 +1,6 @@
 # sandbox-nextjs
 
-Next.js の技術検証と、プロジェクトのひな形を兼ねたリポジトリ。ESLint、Stylelint、Jest、Storybook の設定を含む。
+Next.js（ESLint、Stylelint、Jest、Storybook）の技術検証と、プロジェクトのひな形を兼ねたリポジトリ。
 
 ## 概要
 
