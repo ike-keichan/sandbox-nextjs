@@ -3,9 +3,9 @@
   "extends": [
     "stylelint-config-standard",
     "stylelint-config-styled-components",
-    "stylelint-config-prettier",
     "./configs/stylelint/common",
     "./configs/stylelint/plugin",
     "./configs/stylelint/order"
-  ]
+  ],
+  "ignoreDisables": true
 }

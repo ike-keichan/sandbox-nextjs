@@ -15,20 +15,20 @@ export default {
     'no-use-before-define': OFF,
     complexity: [ERROR, 10],
   },
-  overrides: [
-    {
-      files: ['**/*.{test,stories}.{ts,tsx}'],
-      rules: Object.fromEntries(
-        [
-          'complexity',
-          'max-lines',
-          'max-nested-callbacks',
-          'max-statements',
-          'no-console',
-          'no-magic-numbers',
-          'no-undefined',
-        ].map((rule) => [rule, OFF]),
-      ),
-    },
-  ],
+  // overrides: [
+  //   {
+  //     files: ['**/*.{test,stories}.{ts,tsx}'],
+  //     rules: Object.fromEntries(
+  //       [
+  //         'complexity',
+  //         'max-lines',
+  //         'max-nested-callbacks',
+  //         'max-statements',
+  //         'no-console',
+  //         'no-magic-numbers',
+  //         'no-undefined',
+  //       ].map((rule) => [rule, OFF]),
+  //     ),
+  //   },
+  // ],
 };

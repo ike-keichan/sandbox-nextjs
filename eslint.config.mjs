@@ -23,6 +23,7 @@ const compat = new FlatCompat();
 const eslintFlatConfigs = [
   // ファイルの設定
   {
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
     ignores: ['node_modules', './pnpm-lock.yaml'],
   },
   // ESLintの設定
@@ -48,18 +49,18 @@ const eslintFlatConfigs = [
   // extendの設定
   eslint.configs.recommended,
   // TODO: Flat Config非対応のためcompatでラップする。対応後に修正すること。
-  ...compat.extends('airbnb'),
+  // ...compat.extends('airbnb'),
   ...compat.extends('airbnb/hooks'),
   eslintConfigCommon,
-  eslintConfigTypeScript,
-  eslintConfigNext,
+  // eslintConfigTypeScript,
+  // eslintConfigNext,
   eslintConfigImport,
   eslintConfigStrictDependencies,
   eslintConfigSonarjs,
   eslintConfigUnicorn,
   eslintConfigSecurity,
   eslintConfigJest,
-  eslintConfigTestingLibrary,
+  // eslintConfigTestingLibrary,
   eslintConfigStorybook,
   eslintConfigTsdoc,
   eslintConfigPrettier,

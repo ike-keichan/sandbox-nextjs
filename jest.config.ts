@@ -3,7 +3,7 @@ import type { Config } from 'jest';
 const config: Config = {
   roots: ['<rootDir>/src'],
   setupFilesAfterEnv: ['@testing-library/jest-dom/jest-globals'],
-  testMatch: ['./src/**/*.test.ts(x)?$'],
+  testMatch: ['**/src/**/*.test.ts(x)?'],
   testPathIgnorePatterns: ['./node_modules/'],
   transform: {
     // ts,tsxファイルを@swc/jestでテスト
@@ -36,7 +36,7 @@ const config: Config = {
       },
     ],
   },
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',
   },

@@ -1,5 +1,3 @@
-const property_disallowed_list = require('./rules/property_disallowed_list');
-
 module.exports = {
   rules: {
     //　!importantの使用禁止
