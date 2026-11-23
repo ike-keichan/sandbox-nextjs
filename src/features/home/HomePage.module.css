@@ -27,8 +27,3 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-
-.form {
-  display: grid;
-  gap: 16px;
-}

@@ -1,96 +1,35 @@
-'use client';
-
-import { useState } from 'react';
-
-import { Alert } from '~/components/Alert';
-import { Button } from '~/components/Button';
-import { Checkbox } from '~/components/Checkbox';
-import { TextField } from '~/components/TextField';
 import { TextLink } from '~/components/TextLink';
 
+import { GreetingForm } from './GreetingForm';
 import styles from './HomePage.module.css';
 
-import type { SyntheticEvent } from 'react';
-
-const NAME_MIN_LENGTH = 2;
-
 /**
-トップページの中身
+ * トップページの中身
+ *
+ * 部品の使い方の見本を兼ねている。
+ * この部品は、サーバーの側で動く（Server Component）。操作に反応する部分（GreetingForm）だけを、
+ * ブラウザの側で動く部品（Client Component）にしている。
+ */
+export const HomePage = () => (
+  <main className={styles.main}>
+    <h1 className={styles.heading}>hello world!</h1>
 
-部品の使い方の見本を兼ねている。名前を入力して送信すると、お知らせが表示される。
-*/
-export const HomePage = () => {
-  const [name, setName] = useState('');
-  const [agreed, setAgreed] = useState(false);
-  const [submittedName, setSubmittedName] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>();
+    <section className={styles.section}>
+      <h2 className={styles.sectionHeading}>入力の見本</h2>
+      <GreetingForm />
+    </section>
 
-  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (name.trim().length < NAME_MIN_LENGTH) {
-      setErrorMessage(`${NAME_MIN_LENGTH}文字以上で入力してください。`);
-      setSubmittedName(null);
-      return;
-    }
-
-    setErrorMessage(undefined);
-    setSubmittedName(name.trim());
-  };
-
-  return (
-    <main className={styles.main}>
-      <h1 className={styles.heading}>hello world!</h1>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionHeading}>入力の見本</h2>
-        <form className={styles.form} noValidate onSubmit={handleSubmit}>
-          <TextField
-            description="送信すると、下にお知らせが表示されます。"
-            errorMessage={errorMessage}
-            label="お名前"
-            onChange={(event) => setName(event.target.value)}
-            required
-            value={name}
-          />
-          <Checkbox
-            checked={agreed}
-            label="内容を確認しました"
-            onChange={(event) => setAgreed(event.target.checked)}
-          />
-          <div className={styles.row}>
-            <Button disabled={!agreed} type="submit">
-              送信する
-            </Button>
-            <Button
-              onClick={() => {
-                setName('');
-                setAgreed(false);
-                setSubmittedName(null);
-                setErrorMessage(undefined);
-              }}
-              variant="secondary"
-            >
-              リセット
-            </Button>
-          </div>
-        </form>
-        {submittedName === null ? null : (
-          <Alert title="送信しました" variant="success">
-            {submittedName} さん、こんにちは。
-          </Alert>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionHeading}>リンクの見本</h2>
-        <div className={styles.row}>
-          <TextLink href="/api/hello">API の見本</TextLink>
-          <TextLink external href="https://nextjs.org/docs">
-            Next.js の説明
-          </TextLink>
-        </div>
-      </section>
-    </main>
-  );
-};
+    <section className={styles.section}>
+      <h2 className={styles.sectionHeading}>リンクの見本</h2>
+      <div className={styles.row}>
+        {/* API は、ページではないので、external を付ける */}
+        <TextLink external href="/api/hello">
+          API の見本
+        </TextLink>
+        <TextLink external href="https://nextjs.org/docs">
+          Next.js の説明
+        </TextLink>
+      </div>
+    </section>
+  </main>
+);

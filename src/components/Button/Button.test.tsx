@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+import { findA11yViolations } from '~/shared/test/findA11yViolations';
+
 import { Button } from './Button';
 
 describe('Button', () => {
@@ -21,16 +23,19 @@ describe('Button', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('キーボードの Enter でも、onClick が呼ばれる', async () => {
+  it('キーボードの Enter とスペースでも、onClick が呼ばれる', async () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>送信する</Button>);
 
     await user.tab();
-    await user.keyboard('{Enter}');
 
     expect(screen.getByRole('button')).toHaveFocus();
-    expect(handleClick).toHaveBeenCalledTimes(1);
+
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+
+    expect(handleClick).toHaveBeenCalledTimes(2);
   });
 
   it('disabled のときは、クリックしても onClick が呼ばれない', async () => {
@@ -54,10 +59,18 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
   });
 
+  it('ref を渡すと、button 要素を受け取れる', () => {
+    const ref = { current: null as HTMLButtonElement | null };
+    render(<Button ref={ref}>送信する</Button>);
+
+    expect(ref.current).toBe(screen.getByRole('button'));
+  });
+
   it('種類を指定しなければ、primary のスタイルになる', () => {
     render(<Button>送信する</Button>);
 
     expect(screen.getByRole('button')).toHaveClass('root', 'primary');
+    expect(screen.getByRole('button')).toHaveStyle({ 'min-height': '44px' });
   });
 
   it('secondary を指定すると、secondary のスタイルになる', () => {
@@ -67,9 +80,23 @@ describe('Button', () => {
     expect(screen.getByRole('button')).not.toHaveClass('primary');
   });
 
+  it('フォーカスが当たったときの枠線がある', () => {
+    render(<Button>送信する</Button>);
+
+    screen.getByRole('button').focus();
+
+    expect(screen.getByRole('button')).toHaveStyle({ 'outline-offset': '2px' });
+  });
+
   it('渡した className も、あわせて付く', () => {
     render(<Button className="wide">送信する</Button>);
 
-    expect(screen.getByRole('button')).toHaveClass('root', 'primary', 'wide');
+    expect(screen.getByRole('button')).toHaveClass('wide');
+  });
+
+  it('アクセシビリティの問題がない', async () => {
+    const { container } = render(<Button>送信する</Button>);
+
+    expect(await findA11yViolations(container)).toEqual([]);
   });
 });

@@ -45,7 +45,7 @@
 
 | コマンド | 内容 |
 | --- | --- |
-| `make js/check` | コードを検査します（書式、ESLint、Stylelint、つづり） |
+| `make js/check` | コードを検査します（書式、ESLint、Stylelint、つづり）。ESLint は、警告が1つでもあると、失敗にします |
 | `make js/fix` | 検査の指摘のうち、自動で直せるものを直します |
 | `make js/test` | 単体テストを実行します |
 | `make js/test-coverage` | 単体テストを実行して、テストが通ったコードの割合も表示します |
@@ -60,6 +60,7 @@ $ make js/check
 $ make js/typecheck
 $ make js/test
 $ make js/build
+$ make storybook/build
 ```
 
 ---
@@ -83,23 +84,27 @@ $ make js/check
 $ prettier --check .
 Checking formatting...
 All matched files use Prettier code style!
-$ eslint .
+$ eslint --max-warnings 0 .
 $ stylelint "src/**/*.css"
-$ cspell --no-progress "**/*.{ts,tsx,mjs,json,css}"
-CSpell: Files checked: 60, Issues found: 0 in 0 files.
+$ cspell --no-progress --dot "**/*.{ts,tsx,mjs,mts,json,css}"
+CSpell: Files checked: 77, Issues found: 0 in 0 files.
 
 $ make js/test
+ ✓ src/components/Alert/Alert.test.tsx (9 tests) 221ms
+ ✓ src/features/home/HomePage.test.tsx (3 tests) 150ms
+ ✓ src/components/TextLink/TextLink.test.tsx (8 tests) 227ms
+ ✓ src/components/TextField/TextField.test.tsx (15 tests) 295ms
+ ✓ src/components/Checkbox/Checkbox.test.tsx (10 tests) 307ms
+ ✓ src/components/Button/Button.test.tsx (11 tests) 310ms
+ ✓ src/features/home/GreetingForm.test.tsx (7 tests) 544ms
  ✓ src/shared/utils/classNames.test.ts (3 tests) 3ms
- ✓ src/components/Alert/Alert.test.tsx (5 tests) 93ms
- ✓ src/components/TextLink/TextLink.test.tsx (5 tests) 134ms
- ✓ src/components/Button/Button.test.tsx (8 tests) 137ms
- ✓ src/components/Checkbox/Checkbox.test.tsx (6 tests) 163ms
- ✓ src/components/TextField/TextField.test.tsx (8 tests) 153ms
- ✓ src/features/home/HomePage.test.tsx (5 tests) 246ms
+ ✓ src/components/VisuallyHidden/VisuallyHidden.test.tsx (2 tests) 46ms
 
- Test Files  7 passed (7)
-      Tests  40 passed (40)
+ Test Files  9 passed (9)
+      Tests  68 passed (68)
 ```
+
+テストの行の順番と時間、検査したファイルの数は、実行のたびに変わることがあります。
 
 ESLint と Stylelint は、問題がなければ、何も表示しません。
 
@@ -120,9 +125,11 @@ src/
 │   ├── Button/
 │   ├── Checkbox/
 │   ├── TextField/
-│   └── TextLink/
+│   ├── TextLink/
+│   └── VisuallyHidden/
 └── shared/                ← どこからでも使うもの
     ├── styles/globals.css ← すべてのページに適用するスタイルと、色の定数
+    ├── test/              ← テストで使う関数
     └── utils/             ← 共通の関数
 ```
 
@@ -146,15 +153,16 @@ src/
 
 ## 5. 部品
 
-基本の部品を、5つ入れています。
+基本の部品を、6つ入れています。
 
 | 部品 | 内容 | 主な指定 |
 | --- | --- | --- |
 | `Button` | ボタン | `variant`（`primary`、`secondary`） |
-| `TextLink` | 文字のリンク | `href`、`external`（新しいタブで開く） |
+| `TextLink` | 文字のリンク | `href`、`external`（外のサイトや、ページではない URL へのリンク。新しいタブで開く） |
 | `TextField` | 1行の入力欄 | `label`、`description`、`errorMessage` |
 | `Checkbox` | チェックボックス | `label` |
-| `Alert` | お知らせ | `variant`（`info`、`success`、`error`）、`title` |
+| `Alert` | お知らせ | `variant`（`info`、`success`、`error`）、`title`、`live`（読み上げの役割を付けるか） |
+| `VisuallyHidden` | 画面には見せず、読み上げソフトにだけ伝える文字 | |
 
 1つの部品は、6つのファイルでできています。
 
@@ -177,9 +185,16 @@ import { Button } from '~/components/Button';
 
 - **キーボードだけで操作できる。** フォーカスが当たっている場所が、枠線で分かります。
 - **読み上げソフトに、内容が伝わる。** 入力欄は、名前、説明、エラーの内容が結び付いています。お知らせは、種類に合わせて、読み上げのタイミングが変わります。
+- **色だけで、意味を伝えない。** お知らせの種類は、記号と、読み上げ用の言葉でも伝えます。新しいタブで開くリンクには、記号と、読み上げ用の説明が付きます。
 - **文字と背景の色の差が、十分にある。** 色は、`src/shared/styles/globals.css` に、CSS の変数（`--color-primary` など）としてまとめています。
 - **押せる場所が、小さすぎない。** ボタン、入力欄、チェックボックスは、高さを 44px 以上にしています。
-- **もとの要素の属性を、そのまま渡せる。** たとえば `Button` には、`onClick` や `disabled` を渡せます。
+- **もとの要素の属性を、そのまま渡せる。** たとえば `Button` には、`onClick` や `disabled` を渡せます。`ref` も渡せるので、使う側から、フォーカスを移せます。
+- **`className` は、いちばん外側の要素に付く。** 使う側が、余白や幅を調整するためのものです。`TextField` と `Checkbox` では、そのほかの属性は、中の `input` に付きます。
+
+フォームの見本（`src/features/home/GreetingForm.tsx`）では、送信の結果を、読み上げソフトに伝える書き方も示しています。
+
+- エラーのときは、エラーのある入力欄に、フォーカスを移します。読み上げソフトは、入力欄の名前と、エラーの内容を読み上げます。
+- 成功のお知らせは、最初から置いてある、読み上げ用の領域（`role="status"`）の中に表示します。領域ごとあとから足すと、読み上げられないことがあるためです。
 
 スタイルは、部品の本体で、`styles` として読み込みます。
 
@@ -203,7 +218,11 @@ CSS Modules では、クラスの名前が、ファイルごとに別のもの�
 
 | ファイル | 内容 |
 | --- | --- |
-| （Next.js の公式の設定） | React、React Hooks、アクセシビリティ、Next.js、TypeScript の規則 |
+| （ESLint の公式の設定） | 使っていない変数など、JavaScript の基本の規則 |
+| （Next.js の公式の設定） | React、React Hooks、Next.js、TypeScript の規則 |
+| `a11y/` | アクセシビリティ（名前のない画像、キーボードで操作できない要素など） |
+| `typescript/` | 型だけの読み込みを、`import type` で書く |
+| `restricted-imports/` | 部品の中のファイルを、直接読み込まない |
 | `common/` | 入れ子の深さ、分岐の数、意味の分からない数値など |
 | `import/` | `import` の並び順と、重複 |
 | `strict-dependencies/` | ディレクトリ同士の、読み込んでよい向き |
@@ -215,6 +234,8 @@ CSS Modules では、クラスの名前が、ファイルごとに別のもの�
 | `storybook/` | 見本の書き方（見本のファイルにだけ適用） |
 
 無効にした規則には、理由をコメントで書いています。
+
+警告も、失敗として扱います（`--max-warnings 0`）。警告のまま残すと、増えていっても気づけないためです。
 
 ### Stylelint
 
@@ -228,7 +249,7 @@ CSS Modules では、クラスの名前が、ファイルごとに別のもの�
 
 ### CSpell
 
-英単語のつづりを検査します。辞書にない単語（サービスの名前、道具の名前など）は、`configs/cspell/` の下のファイルに、1行に1つ書いて登録します。日本語は、検査の対象から外しています。
+英単語のつづりを検査します。対象は、`.ts`、`.tsx`、`.mjs`、`.mts`、`.json`、`.css` のファイルです（`.storybook/` のような、名前が `.` で始まるフォルダの中も含みます）。辞書にない単語（サービスの名前、道具の名前など）は、`configs/cspell/` の下のファイルに、1行に1つ書いて登録します。日本語は、検査の対象から外しています。
 
 ---
 
@@ -236,9 +257,10 @@ CSS Modules では、クラスの名前が、ファイルごとに別のもの�
 
 - **使う人と同じ方法で、要素を探します。** クラスの名前ではなく、役割と名前（`getByRole('button', { name: '送信する' })`）で探します。こうすると、読み上げソフトに伝わる内容も、あわせて確かめられます。
 - **操作は、`userEvent` で行います。** クリック、入力、キーボードの操作を、実際の操作に近い形で再現します。
-- **スタイルは、クラスの名前で確かめます。** 種類（`variant`）や状態で、付くクラスが切り替わることを、`toHaveClass` で確かめています。テストでは、クラスの名前が、CSS に書いたとおりの名前になるように設定しています。
+- **スタイルは、クラスの名前と、実際に適用された値で確かめます。** 種類（`variant`）や状態で、付くクラスが切り替わることを、`toHaveClass` で確かめています。テストでは、クラスの名前が、CSS に書いたとおりの名前になるように設定しています。CSS のファイルも実際に読み込むので、高さや、フォーカスが当たったときの枠線のような値は、`toHaveStyle` で確かめられます。
 - **テストの関数は、毎回 `import` します。** `describe`、`it`、`expect`、`vi` を、`vitest` から読み込みます。
-- **ページの中身も、テストします。** `src/features/home/HomePage.test.tsx` で、入力から、お知らせの表示までの流れを確かめています。
+- **ページの中身も、テストします。** `src/features/home/GreetingForm.test.tsx` で、入力から、お知らせの表示までの流れと、エラーのときにフォーカスが移ることを確かめています。
+- **アクセシビリティの問題を、機械的に調べます。** `findA11yViolations`（`src/shared/test/`）が、名前の抜けや、属性の誤りを調べます（axe-core を使います）。部品ごとに、1つずつテストを入れています。色の差は、テストの環境では調べられません。
 
 ```tsx
 it('クリックすると、onClick が呼ばれる', async () => {
@@ -249,6 +271,12 @@ it('クリックすると、onClick が呼ばれる', async () => {
   await user.click(screen.getByRole('button'));
 
   expect(handleClick).toHaveBeenCalledTimes(1);
+});
+
+it('アクセシビリティの問題がない', async () => {
+  const { container } = render(<Button>送信する</Button>);
+
+  expect(await findA11yViolations(container)).toEqual([]);
 });
 ```
 
@@ -267,19 +295,29 @@ it('クリックすると、onClick が呼ばれる', async () => {
 | `package.json`、`pnpm-lock.yaml` | 道具のパッケージと、コマンドを足しました |
 | `Makefile` | 最後に、このブランチのコマンドを足しました |
 | `.github/workflows/test.yml` | 検査、テスト、Storybook のビルドの手順を足しました |
-| `.gitignore` | Storybook の生成物を足しました |
 | `CLAUDE.md` | 最後に、このブランチの決まりを足しました |
 
 ### 足したもの
 
 ページの中身（`src/features/`）、部品（`src/components/`）、共通のもの（`src/shared/`）、設定のファイル（「4. ディレクトリ構成」の表）です。
 
+### main を取り込むとき
+
+`main` を取り込む（`git merge main`）と、次のファイルが衝突することがあります。直し方は、[Development](./05_DEVELOPMENT.md) を参照してください。
+
+| ファイル | 直し方 |
+| --- | --- |
+| `pnpm-lock.yaml` | `main` の側を選んでから、`make js/lock` で作り直します |
+| `src/app/layout.tsx`、`src/app/page.tsx` | このブランチの内容を残して、`main` の変更を手で反映します |
+
 ---
 
 ## 9. 注意点
 
-- **操作に反応する部品は、`'use client'` が必要です。** App Router では、部品は、何もしなければ、サーバーの側で動きます。`useState` などを使う部品は、ファイルの先頭に `'use client'` と書いて、ブラウザの側で動く部品にします。このブランチでは、`src/features/home/HomePage.tsx` に付けています。`src/components/` の部品は、どちらの側でも使えます。
+- **操作に反応する部品は、`'use client'` が必要です。** App Router では、部品は、何もしなければ、サーバーの側で動きます。`useState` などを使う部品は、ファイルの先頭に `'use client'` と書いて、ブラウザの側で動く部品にします。このブランチでは、フォームの部品（`src/features/home/GreetingForm.tsx`）にだけ付けています。ページの中身の全体（`HomePage.tsx`）には、付けていません。付ける範囲を小さくすると、ブラウザに送る JavaScript が減ります。`src/components/` の部品は、どちらの側でも使えます。
 - **Next.js の公式の ESLint の設定が使っている道具の一部は、ESLint 10 への対応を、まだ表明していません**（`eslint-plugin-react`、`eslint-plugin-jsx-a11y`、`eslint-plugin-import`）。実際に規則が働くことは確認していますが、インストールのときに、対応していないという警告が出ます。
-- **テストでは、スタイルの中身（色の値など）までは、確かめていません。** 確かめているのは、付くクラスの名前です。見た目は、Storybook で確かめます。
+- **テストでは、色の値までは、確かめていません。** 色は、CSS の変数（`var(--color-primary)`）で指定していて、テストの環境では、変数の中身まで計算されないためです。確かめているのは、付くクラスの名前と、変数を使わない値（高さ、枠線の位置など）です。色は、Storybook で確かめます。
 - **サーバーの側で動く部品（`async` の部品など）は、Vitest では、テストできません。** データの取得を伴うページは、ブラウザを動かすテスト（Playwright など）で確かめます。このひな形には、入れていません。
+- **Storybook のアクセシビリティの検査は、Storybook の画面で見るためのものです。** `make storybook/build` や、自動テストでは、実行されません。自動で確かめているのは、検査の規則と、テストの `findA11yViolations` です。
+- **ブランチを切り替えたあとに、型の検査が失敗することがあります。** 切り替える前のブランチで作られたファイルが、`.next` フォルダに残っているためです。`.next` フォルダを消してから、やり直してください。
 - **`make storybook` は、開発用のサーバー（`make up`）とは別に起動します。** 両方を同時に動かせます。

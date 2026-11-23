@@ -6,8 +6,8 @@ const { WARN } = CONFIGS;
 
 // 説明のコメント（TSDoc）の書き方の規則
 /**
-@type {import('eslint').Linter.Config[]}
-*/
+ * @type {import('eslint').Linter.Config[]}
+ */
 export default [
   {
     files: ['**/*.{ts,tsx}'],

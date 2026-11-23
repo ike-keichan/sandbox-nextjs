@@ -6,8 +6,8 @@ const { OFF } = CONFIGS;
 
 // 安全でない書き方の規則
 /**
-@type {import('eslint').Linter.Config[]}
-*/
+ * @type {import('eslint').Linter.Config[]}
+ */
 export default [
   eslintPluginSecurity.configs.recommended,
   {

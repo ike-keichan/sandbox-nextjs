@@ -4,8 +4,8 @@ import stylelintConfigOrder from './configs/stylelint/order/index.mjs';
 
 // 規則のまとまりごとに、configs/stylelint/ の下のファイルに分けている。
 /**
-@type {import('stylelint').Config}
-*/
+ * @type {import('stylelint').Config}
+ */
 export default {
   extends: ['stylelint-config-standard'],
   plugins: [...stylelintConfigOrder.plugins],

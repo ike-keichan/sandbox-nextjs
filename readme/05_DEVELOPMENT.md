@@ -116,23 +116,42 @@ $ git switch main
 
 `example/` のブランチが複数ある場合は、それぞれで行います。push すると、そのブランチでも自動テストが動きます。
 
+`main` で、パッケージを足したり、バージョンを上げたりした場合は、取り込みで `pnpm-lock.yaml` が衝突します。次の手順で解消します。
+
+```zsh
+$ git merge main                        # pnpm-lock.yaml が衝突する
+$ git checkout --theirs pnpm-lock.yaml  # いったん、main の側の内容にする
+$ make js/lock                          # package.json に合わせて、作り直す
+$ git add pnpm-lock.yaml
+$ git commit
+```
+
+`package.json` も衝突した場合は、両方の内容が残るように、先に手で直してから、`make js/lock` を実行します。
+
+取り込んだあとは、そのブランチの確認を、すべて実行します（型の検査、ビルド、検査、テスト）。`main` には整形の道具がないので、`main` で直したファイルが、そのブランチの書式の検査に通らないことがあります。その場合は、`make js/fix` で直して、コミットします。
+
 ---
 
 ## 4. 場面ごとの進め方
 
 ### 4-1. Dependabot からプルリクエストが届いた
 
-毎週月曜の朝に、依存の更新がプルリクエストで届きます。対象は、次の3つです。
+毎週月曜の朝に、依存の更新がプルリクエストで届きます。対象は、次の4つです。
 
 | 対象 | 記録されている場所 |
 | --- | --- |
-| JavaScript のパッケージ | `package.json`、`pnpm-lock.yaml` |
+| `main` の JavaScript のパッケージ | `package.json`、`pnpm-lock.yaml` |
+| 組み合わせのブランチにだけ入っている JavaScript のパッケージ | 各ブランチの `package.json`、`pnpm-lock.yaml`。プルリクエストは、ブランチごとに届きます |
 | Node.js のイメージ | `Dockerfile` |
 | GitHub Actions のアクション | `.github/workflows/` |
 
 1. 自動テストが緑なら、そのままマージします。ただし、Node.js のイメージ（`Dockerfile`）の更新の場合は、マージの前に、`.node-version` も同じバージョンに直します（プルリクエストのブランチに、コミットを足します）。Dependabot は、`Dockerfile` しか書き換えないためです。
 2. 赤の場合は、新しい版で書き方が変わっていることが多いです。プルリクエストを閉じて、`feature/` のブランチで、更新と修正をまとめて行います（「4-2」を参照）。
 3. マージしたら、「3-6」の手順で、`example/` のブランチに取り込みます。
+
+組み合わせのブランチ向けのプルリクエストは、そのブランチに直接マージします。`main` への取り込みは、ありません。
+
+Next.js、React、TypeScript は、`main` でだけ上げます。Next.js を上げたときは、組み合わせのブランチにある、Next.js と対になるパッケージ（`eslint-config-next`、`@storybook/nextjs` など）も、同じバージョンにそろえます。
 
 ### 4-2. 手で依存を更新する
 
@@ -179,6 +198,8 @@ $ make js/build
 - 見本のブランチでは、`main` にあるファイルの書き換えを、必要な分だけにとどめます（`package.json`、`src/app/` の中のファイルなど）。
 
 それでも衝突した場合は、`main` の変更と、見本の内容の両方が残るように、手で直します。直したら、検査とテストを実行してから、コミットします。
+
+Pages Router のブランチでは、`src/app/` を消して、`src/pages/` に置き換えています。`main` で `src/app/` の中のファイルを変えると、「変更と削除の衝突」になります。その場合は、`src/app/` の側を消したままにして、同じ変更を、`src/pages/` の対応するファイルに、手で入れます。
 
 ---
 

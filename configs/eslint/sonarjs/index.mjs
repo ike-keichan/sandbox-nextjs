@@ -6,8 +6,8 @@ const { OFF } = CONFIGS;
 
 // バグになりやすい書き方と、分かりにくい書き方の規則
 /**
-@type {import('eslint').Linter.Config[]}
-*/
+ * @type {import('eslint').Linter.Config[]}
+ */
 export default [
   eslintPluginSonarjs.configs.recommended,
   {

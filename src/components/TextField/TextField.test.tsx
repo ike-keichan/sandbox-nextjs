@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+import { findA11yViolations } from '~/shared/test/findA11yViolations';
+
 import { TextField } from './TextField';
 
 describe('TextField', () => {
@@ -20,6 +22,17 @@ describe('TextField', () => {
 
     expect(screen.getByRole('textbox')).toHaveValue('山田');
     expect(handleChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('キーボードの Tab で、フォーカスが当たり、そのまま入力できる', async () => {
+    const user = userEvent.setup();
+    render(<TextField label="お名前" />);
+
+    await user.tab();
+    await user.keyboard('abc');
+
+    expect(screen.getByRole('textbox')).toHaveFocus();
+    expect(screen.getByRole('textbox')).toHaveValue('abc');
   });
 
   it('説明を、入力欄と結び付ける', () => {
@@ -50,6 +63,13 @@ describe('TextField', () => {
     expect(input).not.toHaveClass('invalid');
   });
 
+  it('エラーの内容が空の文字列のときも、エラーの表示にならない', () => {
+    render(<TextField errorMessage="" label="お名前" />);
+
+    expect(screen.getByRole('textbox')).toBeValid();
+    expect(screen.getByRole('textbox')).not.toHaveAccessibleDescription();
+  });
+
   it('説明とエラーの両方があるときは、両方を入力欄と結び付ける', () => {
     render(
       <TextField
@@ -60,7 +80,20 @@ describe('TextField', () => {
     );
 
     expect(screen.getByRole('textbox')).toHaveAccessibleDescription(
-      '姓と名のあいだに、空白を入れてください。 2文字以上で入力してください。',
+      /^姓と名のあいだに、空白を入れてください。\s*2文字以上で入力してください。$/,
+    );
+  });
+
+  it('使う側が指定した説明（aria-describedby）も、あわせて結び付ける', () => {
+    render(
+      <>
+        <p id="rule">ひらがなで入力してください。</p>
+        <TextField aria-describedby="rule" description="姓と名を入力します。" label="お名前" />
+      </>,
+    );
+
+    expect(screen.getByRole('textbox')).toHaveAccessibleDescription(
+      /^ひらがなで入力してください。\s*姓と名を入力します。$/,
     );
   });
 
@@ -78,5 +111,42 @@ describe('TextField', () => {
 
     expect(screen.getByRole('textbox')).toBeDisabled();
     expect(screen.getByRole('textbox')).toHaveValue('');
+  });
+
+  it('ref を渡すと、input 要素を受け取れる', () => {
+    const ref = { current: null as HTMLInputElement | null };
+    render(<TextField label="お名前" ref={ref} />);
+
+    expect(ref.current).toBe(screen.getByRole('textbox'));
+  });
+
+  it('フォーカスが当たったときの枠線がある', () => {
+    render(<TextField label="お名前" />);
+
+    screen.getByRole('textbox').focus();
+
+    expect(screen.getByRole('textbox')).toHaveStyle({ 'outline-offset': '2px' });
+  });
+
+  it('className は、入力欄ではなく、いちばん外側の要素に付く', () => {
+    const { container } = render(<TextField className="wide" label="お名前" />);
+
+    // いちばん外側の要素には、役割も名前もないので、ここだけは、要素を直接たどる
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.firstChild).toHaveClass('wide');
+    expect(screen.getByRole('textbox')).not.toHaveClass('wide');
+  });
+
+  it('アクセシビリティの問題がない', async () => {
+    const { container } = render(
+      <TextField
+        description="姓と名のあいだに、空白を入れてください。"
+        errorMessage="2文字以上で入力してください。"
+        label="お名前"
+        required
+      />,
+    );
+
+    expect(await findA11yViolations(container)).toEqual([]);
   });
 });

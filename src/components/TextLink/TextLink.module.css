@@ -15,12 +15,7 @@
   outline-offset: 2px;
 }
 
-/* 画面には表示せず、読み上げソフトにだけ伝える文字 */
-.visuallyHidden {
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
+/* 新しいタブで開くことを表す記号 */
+.externalMark {
+  margin-left: 2px;
 }

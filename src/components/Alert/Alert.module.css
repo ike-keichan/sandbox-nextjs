@@ -1,8 +1,11 @@
 .root {
+  align-items: flex-start;
   border-left-style: solid;
   border-left-width: 4px;
   border-radius: 4px;
   color: var(--color-text);
+  display: flex;
+  gap: 8px;
   padding: 12px 16px;
 }
 
@@ -19,6 +22,28 @@
 .error {
   background-color: var(--color-error-surface);
   border-color: var(--color-error);
+}
+
+/* 種類を表す記号。色だけでなく、形でも、種類が分かるようにする */
+.mark {
+  font-weight: 700;
+}
+
+.info .mark {
+  color: var(--color-primary);
+}
+
+.success .mark {
+  color: var(--color-success);
+}
+
+.error .mark {
+  color: var(--color-error);
+}
+
+.content {
+  display: grid;
+  gap: 2px;
 }
 
 .title {
