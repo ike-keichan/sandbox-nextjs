@@ -3,10 +3,10 @@ import { classNames } from '~/shared/utils/classNames';
 import type { CheckboxProps } from './Checkbox.types';
 
 /**
-チェックボックス
-
-文字の部分を押しても、チェックを切り替えられる（全体を label で囲んでいる）。
-*/
+ * チェックボックス
+ *
+ * 文字の部分を押しても、チェックを切り替えられる（全体を label で囲んでいる）。
+ */
 export const Checkbox = ({ label, className, ...rest }: CheckboxProps) => (
   <label
     className={classNames(

@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+import { findA11yViolations } from '~/shared/test/findA11yViolations';
+
 import { Checkbox } from './Checkbox';
 
 describe('Checkbox', () => {
@@ -60,5 +62,45 @@ describe('Checkbox', () => {
 
     expect(screen.getByRole('checkbox')).toBeDisabled();
     expect(screen.getByRole('checkbox')).not.toBeChecked();
+  });
+
+  it('横の内容に、文字以外（リンクなど）も渡せる', () => {
+    render(
+      <Checkbox
+        label={
+          <>
+            <a href="/terms">利用規約</a>に同意する
+          </>
+        }
+      />,
+    );
+
+    // リンクと文字のあいだの空白の有無は、問わない
+    expect(screen.getByRole('checkbox', { name: /^利用規約\s*に同意する$/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '利用規約' })).toBeInTheDocument();
+  });
+
+  it('フォーカスが当たったときの枠線がある', () => {
+    render(<Checkbox label="利用規約に同意する" />);
+
+    expect(screen.getByRole('checkbox')).toHaveClass(
+      'focus-visible:outline-2',
+      'focus-visible:outline-offset-2',
+      'focus-visible:outline-primary',
+    );
+  });
+
+  it('className は、チェックボックスではなく、いちばん外側の要素に付く', () => {
+    const { container } = render(<Checkbox className="wide" label="利用規約に同意する" />);
+
+    // いちばん外側の要素には、役割も名前もないので、ここだけは、要素を直接たどる
+    expect(container.firstChild).toHaveClass('wide');
+    expect(screen.getByRole('checkbox')).not.toHaveClass('wide');
+  });
+
+  it('アクセシビリティの問題がない', async () => {
+    const { container } = render(<Checkbox label="利用規約に同意する" />);
+
+    expect(await findA11yViolations(container)).toEqual([]);
   });
 });

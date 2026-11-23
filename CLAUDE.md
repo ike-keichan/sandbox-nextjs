@@ -82,6 +82,8 @@ make upd && bash scripts/smoke.sh
 
 手元（macOS）で動いても、自動テストの環境（Linux）で動かないことがある。ファイルの持ち主や、大文字と小文字の区別が違うためである。`Dockerfile` や `docker-compose.yml` を変えたときは、GitHub Actions の結果まで確かめる。
 
+文書やコメントに「〜を検査する」「〜を保証する」と書くときは、それが実際に働くことを確かめてから書く。設定があるだけで、自動テストでは実行されていない、ということがないようにする。確かめる方法は、わざと違反を書いて、検査が失敗することを見ることである。
+
 確かめられなかったことは、確かめられなかったと伝える。
 
 ### `main` を変えたあと
@@ -111,6 +113,16 @@ make upd && bash scripts/smoke.sh
 
 - コメントは、日本語で書く。
 - 公開する部品、関数、型には、何をするものかを、TSDoc（`/** ... */`）で書く。
+- TSDoc は、2行目からの行頭に ` * ` を付ける形で書く。
+
+  ```ts
+  /**
+   * ボタン
+   *
+   * type を指定しなければ、button になる。
+   */
+  ```
+
 - コードを読めば分かることは、コメントにしない。なぜそうしているかを書く。
 
 ## 設定ファイルを変えるとき
@@ -193,16 +205,22 @@ make storybook/build
 
 - ページのファイル（`src/app/**/page.tsx`）には、中身の部品の呼び出しだけを書く。中身は、`src/features/<ページの名前>/` に置く。
 - 読み込みの向きは、`app` → `features` → `components` → `shared` の一方向にする。Biome が検査する（`biome.json` の `overrides`）。フォルダを足したら、`overrides` にも、決まりを足す。
-- `'use client'` は、`src/features/` の、操作に反応する部品に付ける。`src/components/` の部品には、付けない（サーバーの側でも、ブラウザの側でも使えるようにしておく）。部品の中で `useState` などが必要になったら、その部品にだけ付ける。
+- `'use client'` は、`src/features/` の、操作に反応する部品に付ける。ページの中身の全体ではなく、操作に反応する部分だけを別の部品に分けて、そこに付ける（`GreetingForm.tsx` が手本）。`src/components/` の部品には、付けない（サーバーの側でも、ブラウザの側でも使えるようにしておく）。部品の中で `useState` などが必要になったら、その部品にだけ付ける。
 
 ## 部品
 
 - 部品は、`src/components/<部品の名前>/` に、5つのファイルで作る（本体、`.types.ts`、`.test.tsx`、`.stories.tsx`、`index.ts`）。スタイルは、本体に、Tailwind CSS のクラスで書く。
-- 使う側は、フォルダの名前で読み込む（`~/components/Button`）。中のファイルを、直接読み込まない。
-- もとの要素の属性を、そのまま渡せるようにする（`ComponentPropsWithoutRef<'button'>` を型に含めて、残りを要素に渡す）。
+- 使う側は、フォルダの名前で読み込む（`~/components/Button`）。中のファイルを、直接読み込まない。検査の道具が確かめる。部品のフォルダの中では、相対の書き方（`./Button.types`）で読み込む。
+- もとの要素の属性と `ref` を、そのまま渡せるようにする（`ComponentProps<'button'>` を型に含めて、残りを要素に渡す）。`ComponentPropsWithoutRef` は使わない。
+- 要素が入れ子になる部品（`TextField`、`Checkbox`）では、`className` をいちばん外側の要素に、そのほかの属性を、操作する要素（`input`）に付ける。
+- 部品が自分で決める属性（`TextField` の `id`、`aria-invalid` など）は、型から外して（`Omit`）、使う側が上書きできないようにする。使う側の `aria-describedby` は、部品のものとあわせて付ける。
 - 見た目の種類は、`variant` という名前で受け取る。
 - キーボードだけで操作できるようにする。フォーカスが当たったときの枠線（`:focus-visible`）を、必ず付ける。
 - 読み上げソフトに伝わるようにする。入力欄には、必ず名前（`label`）を付ける。説明やエラーは、`aria-describedby` で結び付ける。見た目だけの要素（`div` に `onClick` を付けるなど）で、ボタンやリンクを作らない。
+- 色や記号だけで、意味を伝えない。記号には `aria-hidden` を付けて、同じ意味の言葉を、`VisuallyHidden` で添える。
+- あとから表示する内容を読み上げさせるときは、読み上げ用の領域（`role="status"`）を最初から置いて、その中身を入れ替える。領域の中に置く `Alert` には、`live={false}` を付ける（役割が二重にならないようにする）。
+- フォームでエラーになったら、エラーのある入力欄に、フォーカスを移す。
+- ページではない URL（API、ファイル、外のサイト）へのリンクは、`TextLink` に `external` を付ける。付けないと、`next/link` が、ページとして先に読み込もうとする。
 - 押せる場所は、高さを 44px 以上にする。
 - 色は、`src/shared/styles/globals.css` の `@theme` に書いた色のクラス（`bg-primary`、`text-error` など）を使う。色の値（`bg-[#0b57d0]`）や、Tailwind CSS に最初からある色（`bg-blue-600`）を、部品に直接書かない。色を足すときは、文字と背景の組み合わせで、読みやすさの基準（コントラスト比 4.5 以上）を満たすことを確かめる。
 
@@ -210,10 +228,11 @@ make storybook/build
 
 - スタイルは、Tailwind CSS のクラスで書く。CSS のファイルを、部品ごとに作らない。`style` 属性も使わない。
 - クラスの名前は、省略せずに、そのままの形で書く。文字をつなげて、クラスの名前を作らない（`'bg-' + color` は、CSS にならない）。種類ごとのスタイルは、`variant` の値をキーにしたオブジェクトに、完全な名前で書く。
-- 長いクラスの並びは、部品の上で、定数に入れる。共通のスタイル（`baseClassName`）と、種類ごとのスタイル（`variantClassNames`）を分ける。
+- 長いクラスの並びは、部品の上で、定数に入れる。共通のスタイル（`baseClassName`）と、種類ごとのスタイル（`variantClassNames`）を分ける。定数に入れるクラスも、`classNames('...')` を通して書く（通さないと、クラスの並び順が、自動で直らない）。
 - 複数のクラスを付けるときは、`~/shared/utils/classNames` の `classNames` を使う。
 - 部品は、`className` を受け取って、いちばん外側の要素に、自分のクラスとあわせて付ける。
-- 色を足すときは、`src/shared/styles/globals.css` の `@theme` に、`--color-<名前>` の形で足す。
+- 色を足すときは、`src/shared/styles/globals.css` の `@theme` に、`--color-<名前>` の形で足す。Tailwind CSS に最初から入っている色は、`--color-*: initial;` で消してあるので、使えない。
+- 全体に適用するスタイル（`body` など）は、`globals.css` の `@layer base` の中に書く。層の外に書くと、クラスで上書きできなくなる。
 - 決まった値で表せるものは、`[...]` で値を直接書かない（`min-h-11` を使い、`min-h-[44px]` と書かない）。
 - フォーカスの枠線は、`focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary` を付ける。
 - クラスの並び順は、Biome に任せる（`make js/fix`）。手で並べ替えない。
@@ -221,6 +240,9 @@ make storybook/build
 
 ## 検査（Biome）
 
+- 警告も、失敗として扱う（`--error-on-warnings`）。警告を残したままにしない。
+- `biome.json` の `overrides` は、同じ規則の設定を、足すのではなく、置き換える。読み込みの決まり（`noRestrictedImports`）を `overrides` に書くときは、全体に共通の決まり（部品の中のファイルを直接読み込まない）も、あわせて書く。
+- Storybook のアクセシビリティの検査は、Storybook の画面でしか実行されない。自動で確かめたいことは、Biome の規則か、テストに書く。
 - 整形と検査は、Biome で行う。ESLint、Prettier、Stylelint を、このブランチに足さない。
 - 規則を変えるときは、`biome.json` で行う。コードの中に、無効にするコメント（`biome-ignore`）を書くのは、その1か所だけの例外のときに限り、理由を必ず添える。
 - 設定の書き方は、Biome のバージョンで変わる。変えるときは、記憶に頼らず、`biome.json` の先頭の `$schema` の URL にある定義を見て、規則の名前と置き場所を確かめる。変えたあとは、わざと違反を書いて、規則が働くことを確かめる。
@@ -231,11 +253,13 @@ make storybook/build
 
 - テストは、部品と同じフォルダに、`<部品の名前>.test.tsx` という名前で置く。
 - テストの関数（`describe`、`it`、`expect`、`vi`）は、`vitest` から、毎回 `import` する。
-- 要素は、役割と名前で探す（`getByRole`）。クラスの名前や、`data-testid` で探さない。
+- 要素は、役割と名前で探す（`getByRole`）。クラスの名前や、`data-testid` で探さない。役割も名前もない要素を確かめるときだけ、例外にして、理由をコメントで書く。
 - 操作は、`userEvent` で行う。`fireEvent` は使わない。
 - テストの名前は、日本語で、「どうすると、どうなるか」を書く。
 - 部品を足したら、表示、操作、キーボードでの操作、無効のとき、種類ごとに付くクラスを確かめる。
-- スタイルは、付くクラスの名前を、`toHaveClass` で確かめる。種類を表す、代表のクラス（`bg-primary` など）だけを確かめる。すべてのクラスを、並べて確かめない。
+- スタイルは、付くクラスの名前を、`toHaveClass` で確かめる。種類を表す、代表のクラス（`bg-primary` など）と、フォーカスが当たったときの枠線のクラスだけを確かめる。すべてのクラスを、並べて確かめない。
+- `ref` と、`className` の付く場所も確かめる。
+- 部品ごとに、`findA11yViolations`（`~/shared/test/findA11yViolations`）で、アクセシビリティの問題がないことを確かめるテストを、1つ入れる。
 - 読み上げ用の名前を確かめるときは、空白の有無まで、厳密に比べない（正規表現を使う）。
 - Vite が警告を出したら、放置せずに、内容に従って直す。
 

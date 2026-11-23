@@ -51,7 +51,18 @@
         "noExcessiveCognitiveComplexity": "warn"
       },
       "style": {
-        "useImportType": "error"
+        "useImportType": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["~/components/*/*"],
+                "message": "部品は、フォルダの名前で読み込む（例: ~/components/Button）。中のファイルを、直接読み込まない。"
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -65,7 +76,7 @@
   },
   "overrides": [
     {
-      "includes": ["src/components/**"],
+      "includes": ["src/app/**"],
       "linter": {
         "rules": {
           "style": {
@@ -74,8 +85,12 @@
               "options": {
                 "patterns": [
                   {
-                    "group": ["~/features/**", "~/app/**"],
-                    "message": "部品（components）から、ページ（app）や、ページの中身（features）を読み込まない。"
+                    "group": ["~/components/*/*"],
+                    "message": "部品は、フォルダの名前で読み込む（例: ~/components/Button）。中のファイルを、直接読み込まない。"
+                  },
+                  {
+                    "group": ["~/components/**", "**/components/**"],
+                    "message": "ページ（app）から、部品（components）を直接読み込まない。ページの中身（features）を通して使う。"
                   }
                 ]
               }
@@ -94,8 +109,36 @@
               "options": {
                 "patterns": [
                   {
-                    "group": ["~/app/**"],
+                    "group": ["~/components/*/*"],
+                    "message": "部品は、フォルダの名前で読み込む（例: ~/components/Button）。中のファイルを、直接読み込まない。"
+                  },
+                  {
+                    "group": ["~/app/**", "**/app/**"],
                     "message": "ページの中身（features）から、ページ（app）を読み込まない。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/components/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["~/components/*/*"],
+                    "message": "部品は、フォルダの名前で読み込む（例: ~/components/Button）。中のファイルを、直接読み込まない。"
+                  },
+                  {
+                    "group": ["~/features/**", "**/features/**", "~/app/**", "**/app/**"],
+                    "message": "部品（components）から、ページ（app）や、ページの中身（features）を読み込まない。"
                   }
                 ]
               }
@@ -114,7 +157,18 @@
               "options": {
                 "patterns": [
                   {
-                    "group": ["~/components/**", "~/features/**", "~/app/**"],
+                    "group": ["~/components/*/*"],
+                    "message": "部品は、フォルダの名前で読み込む（例: ~/components/Button）。中のファイルを、直接読み込まない。"
+                  },
+                  {
+                    "group": [
+                      "~/components/**",
+                      "**/components/**",
+                      "~/features/**",
+                      "**/features/**",
+                      "~/app/**",
+                      "**/app/**"
+                    ],
                     "message": "共通のもの（shared）から、部品やページを読み込まない。"
                   }
                 ]

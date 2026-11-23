@@ -1,4 +1,4 @@
-.PHONY: setup up upd stop restart build down ps js/typecheck js/build js/install js/add js/add-d js/outdated node/login node/repl
+.PHONY: setup up upd stop restart build down ps js/typecheck js/build js/install js/lock js/add js/add-d js/outdated node/login node/repl
 
 # コンテナを、手元のパソコンと同じユーザーで動かすために、ユーザーの番号を渡す（docker-compose.yml の user を参照）。
 export HOST_UID := $(shell id -u)
@@ -42,6 +42,9 @@ js/build:
 # パッケージのインストール（pnpm-lock.yaml のとおりに入れる）
 js/install:
 	docker compose run --rm app pnpm install --frozen-lockfile
+# pnpm-lock.yaml の作り直し（package.json の内容に合わせる。取り込みで衝突したときに使う）
+js/lock:
+	docker compose run --rm app pnpm install --no-frozen-lockfile
 # パッケージの追加
 js/add:
 	docker compose run --rm app pnpm add --save-exact $(TARGET)

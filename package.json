@@ -16,8 +16,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "check": "pnpm check:biome && pnpm check:spell",
-    "check:biome": "biome check .",
-    "check:spell": "cspell --no-progress \"**/*.{ts,tsx,mjs,mts,json,css}\"",
+    "check:biome": "biome check --error-on-warnings .",
+    "check:spell": "cspell --no-progress --dot \"**/*.{ts,tsx,mjs,mts,json,css}\"",
     "fix": "biome check --write .",
     "storybook": "storybook dev --port 6006 --host 0.0.0.0 --no-open",
     "build-storybook": "storybook build"
@@ -41,6 +41,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.3.0",
     "@vitest/coverage-v8": "5.1.1",
+    "axe-core": "4.14.1",
     "cspell": "10.5.2",
     "jsdom": "31.0.1",
     "postcss": "8.5.33",

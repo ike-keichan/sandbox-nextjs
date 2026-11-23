@@ -5,7 +5,7 @@ type HelloResponse = {
 };
 
 /**
-サンプルのAPI
-*/
+ * サンプルのAPI
+ */
 export const GET = (): NextResponse<HelloResponse> =>
   NextResponse.json({ message: 'hello world!' });

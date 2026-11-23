@@ -224,6 +224,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 5.1.1
         version: 5.1.1(vitest@5.1.1)
+      axe-core:
+        specifier: 4.14.1
+        version: 4.14.1
       cspell:
         specifier: 10.5.2
         version: 10.5.2
