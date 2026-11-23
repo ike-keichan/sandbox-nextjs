@@ -4,8 +4,8 @@ const { OFF, WARN, ERROR } = CONFIGS;
 
 // ESLint に最初から入っている規則
 /**
-@type {import('eslint').Linter.Config[]}
-*/
+ * @type {import('eslint').Linter.Config[]}
+ */
 export default [
   {
     rules: {

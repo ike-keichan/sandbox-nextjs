@@ -7,8 +7,8 @@ const { ERROR } = CONFIGS;
 // どのディレクトリから、どのディレクトリを読み込んでよいかの規則
 // 依存の向きを、app → features → components → shared の一方向に保つ。
 /**
-@type {import('eslint').Linter.Config[]}
-*/
+ * @type {import('eslint').Linter.Config[]}
+ */
 export default [
   {
     plugins: {

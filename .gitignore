@@ -13,9 +13,10 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 
-# 環境変数
+# 環境変数（.env.example は、項目の見本として、Git で管理する）
 .env
 .env.*
+!.env.example
 
 # ログ
 *.log

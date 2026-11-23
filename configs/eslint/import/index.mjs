@@ -7,8 +7,8 @@ const { ERROR } = CONFIGS;
 // import の書き方の規則
 // eslint-plugin-import の後継の eslint-plugin-import-x を使う（ESLint 10 に対応している）。
 /**
-@type {import('eslint').Linter.Config[]}
-*/
+ * @type {import('eslint').Linter.Config[]}
+ */
 export default [
   {
     plugins: {

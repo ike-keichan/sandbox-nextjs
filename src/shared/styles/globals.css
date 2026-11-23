@@ -7,6 +7,10 @@
    ここに書いた色は、Tailwind CSS のクラスとして使える（--color-primary なら、bg-primary、text-primary、border-primary など）。
    文字と背景の組み合わせは、読みやすさの基準（コントラスト比 4.5 以上）を満たすものにしている。 */
 @theme {
+  /* Tailwind CSS に最初から入っている色（red-500 など）を、使えなくする。
+     色は、下に書いたものだけを使う。 */
+  --color-*: initial;
+
   /* 文字 */
   --color-foreground: #1f1f1f;
 
@@ -44,9 +48,13 @@
   --color-error-surface: #fce8e6;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: system-ui, sans-serif;
-  line-height: 1.7;
+/* 全体のスタイルは、base の層に書く。
+   層の外に書くと、Tailwind CSS のクラスより優先されてしまい、クラスで上書きできなくなる。 */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: system-ui, sans-serif;
+    line-height: 1.7;
+  }
 }
