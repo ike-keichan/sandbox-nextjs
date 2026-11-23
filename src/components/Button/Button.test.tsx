@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { COLORS } from '~/shared/const/colors';
+import { findA11yViolations } from '~/shared/test/findA11yViolations';
 
 import { Button } from './Button';
 
@@ -22,16 +23,19 @@ describe('Button', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('キーボードの Enter でも、onClick が呼ばれる', async () => {
+  it('キーボードの Enter とスペースでも、onClick が呼ばれる', async () => {
     const user = userEvent.setup();
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>送信する</Button>);
 
     await user.tab();
-    await user.keyboard('{Enter}');
 
     expect(screen.getByRole('button')).toHaveFocus();
-    expect(handleClick).toHaveBeenCalledTimes(1);
+
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+
+    expect(handleClick).toHaveBeenCalledTimes(2);
   });
 
   it('disabled のときは、クリックしても onClick が呼ばれない', async () => {
@@ -55,17 +59,44 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
   });
 
-  it('primary は、主となる色で塗りつぶす', () => {
-    render(<Button variant="primary">送信する</Button>);
+  it('ref を渡すと、button 要素を受け取れる', () => {
+    const ref = { current: null as HTMLButtonElement | null };
+    render(<Button ref={ref}>送信する</Button>);
+
+    expect(ref.current).toBe(screen.getByRole('button'));
+  });
+
+  it('種類を指定しなければ、primary のスタイルになる', () => {
+    render(<Button>送信する</Button>);
 
     expect(screen.getByRole('button')).toHaveStyleRule('background-color', COLORS.PRIMARY);
     expect(screen.getByRole('button')).toHaveStyleRule('color', COLORS.ON_PRIMARY);
   });
 
-  it('secondary は、枠線と文字を主となる色にする', () => {
+  it('secondary を指定すると、secondary のスタイルになる', () => {
     render(<Button variant="secondary">戻る</Button>);
 
     expect(screen.getByRole('button')).toHaveStyleRule('background-color', COLORS.BACKGROUND);
     expect(screen.getByRole('button')).toHaveStyleRule('color', COLORS.PRIMARY);
+  });
+
+  it('フォーカスが当たったときの枠線がある', () => {
+    render(<Button>送信する</Button>);
+
+    expect(screen.getByRole('button')).toHaveStyleRule('outline', `2px solid ${COLORS.PRIMARY}`, {
+      modifier: '&:focus-visible',
+    });
+  });
+
+  it('渡した className も、あわせて付く', () => {
+    render(<Button className="wide">送信する</Button>);
+
+    expect(screen.getByRole('button')).toHaveClass('wide');
+  });
+
+  it('アクセシビリティの問題がない', async () => {
+    const { container } = render(<Button>送信する</Button>);
+
+    expect(await findA11yViolations(container)).toEqual([]);
   });
 });

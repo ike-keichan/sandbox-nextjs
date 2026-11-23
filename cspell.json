@@ -25,6 +25,8 @@
   "ignorePaths": [
     "node_modules",
     ".next",
+    ".git",
+    ".vscode",
     "coverage",
     "storybook-static",
     "pnpm-lock.yaml",

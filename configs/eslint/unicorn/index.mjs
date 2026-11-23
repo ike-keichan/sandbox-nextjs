@@ -18,6 +18,9 @@ export default [
       'unicorn/prevent-abbreviations': OFF,
       // props、ref などの名前を、長い名前に直させる規則。上と同じ理由で無効にする
       'unicorn/name-replacements': OFF,
+      // 説明のコメント（TSDoc）の、行頭の * を取り除く規則。
+      // このプロジェクトは、行頭に * を付ける形で書く（エディタが自動で付ける形）ので、無効にする
+      'unicorn/no-asterisk-prefix-in-documentation-comments': OFF,
       // React では、何も表示しないときに null を返す
       'unicorn/no-null': OFF,
       // ページの部品は、const で定義してから、最後に export default する（ほかの部品と書き方をそろえる）

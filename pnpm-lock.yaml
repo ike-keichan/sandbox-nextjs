@@ -221,6 +221,9 @@ importers:
       '@types/react-dom':
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
+      axe-core:
+        specifier: 4.14.1
+        version: 4.14.1
       cspell:
         specifier: 10.5.2
         version: 10.5.2
@@ -239,6 +242,9 @@ importers:
       eslint-plugin-jest:
         specifier: 29.17.1
         version: 29.17.1(@typescript-eslint/eslint-plugin@8.73.0(@typescript-eslint/parser@8.73.0(eslint@10.15.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.15.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.15.0(jiti@2.7.0)(supports-color@8.1.1))(jest@30.5.2(@types/node@26.6.6)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)
+      eslint-plugin-jsx-a11y:
+        specifier: 6.10.2
+        version: 6.10.2(eslint@10.15.0(jiti@2.7.0)(supports-color@8.1.1))
       eslint-plugin-security:
         specifier: 4.2.1
         version: 4.2.1
@@ -260,9 +266,6 @@ importers:
       eslint-plugin-unicorn:
         specifier: 80.0.0
         version: 80.0.0(eslint@10.15.0(jiti@2.7.0)(supports-color@8.1.1))(typescript@6.0.3)
-      globals:
-        specifier: 17.14.0
-        version: 17.14.0
       jest:
         specifier: 30.5.2
         version: 30.5.2(@types/node@26.6.6)(supports-color@8.1.1)
@@ -293,9 +296,6 @@ importers:
       typescript:
         specifier: 6.0.3
         version: 6.0.3
-      typescript-eslint:
-        specifier: 8.73.0
-        version: 8.73.0(eslint@10.15.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)
 
 packages:
 

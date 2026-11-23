@@ -3,10 +3,10 @@ import Head from 'next/head';
 import { HomePage } from '~/features/home/HomePage';
 
 /**
-トップページ
-
-ページのファイルには、題名と、中身の部品の呼び出しだけを書く。
-*/
+ * トップページ
+ *
+ * ページのファイルには、題名と、中身の部品の呼び出しだけを書く。
+ */
 const IndexPage = () => (
   <>
     <Head>

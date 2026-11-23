@@ -19,9 +19,34 @@ expect_status() {
   echo "${actual} $*"
 }
 
-# 起動が終わるまで、少し待ちながら呼ぶ。
-curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 2 "${BASE_URL}/api/hello"
-echo
+# 本文に、期待した文字が含まれることを確かめる関数。含まれなければ、失敗で終わる。
+# 使い方: expect_body <含まれるはずの文字> <curl の引数...>
+expect_body() {
+  local expected="$1"
+  shift
+  local body
+  body="$(curl --fail --silent --show-error "$@")"
+  if [[ "${body}" != *"${expected}"* ]]; then
+    echo "expected the body to contain '${expected}': $*" >&2
+    echo "${body}" >&2
+    exit 1
+  fi
+  echo "ok (${expected}) $*"
+}
 
-expect_status 200 "${BASE_URL}/"
+# 起動が終わるまで、少し待ちながら呼ぶ。
+curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 2 --output /dev/null "${BASE_URL}/api/hello"
+
+# API の見本
+expect_body '"message":"hello world!"' "${BASE_URL}/api/hello"
+# GET 以外のメソッドは、受け付けない。
+expect_status 405 -X POST "${BASE_URL}/api/hello"
+
+# ページ
+expect_body 'hello world!' "${BASE_URL}/"
+
+# styled-components のスタイルが、サーバーの側で作る HTML に入っていることを確かめる。
+# 入っていないと、ページを開いた直後に、スタイルのない状態が一瞬見える（src/pages/_document.tsx の設定が外れている）。
+expect_body 'min-height:44px' "${BASE_URL}/"
+
 expect_status 404 "${BASE_URL}/unknown"

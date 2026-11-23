@@ -50,6 +50,7 @@
 | `make js/add TARGET=<パッケージ名>` | パッケージを追加します |
 | `make js/add-d TARGET=<パッケージ名>` | 開発用のパッケージ（検査やテストの道具）を追加します |
 | `make js/install` | `pnpm-lock.yaml` の記録のとおりに、パッケージをインストールします |
+| `make js/lock` | `pnpm-lock.yaml` を、`package.json` の内容に合わせて作り直します。`main` を取り込んで、`pnpm-lock.yaml` が衝突したときに使います |
 | `make js/outdated` | 新しいバージョンが出ているパッケージを表示します。何も表示されなければ、すべて最新です |
 
 例：`zod` を追加する場合

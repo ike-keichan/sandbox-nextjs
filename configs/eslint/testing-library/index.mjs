@@ -11,4 +11,11 @@ export default [
     files: TEST_FILES,
     ...eslintPluginTestingLibrary.configs['flat/react'],
   },
+  {
+    files: TEST_FILES,
+    rules: {
+      // 操作は、fireEvent ではなく、userEvent で行う（実際の操作に近い）
+      'testing-library/prefer-user-event': 'error',
+    },
+  },
 ];

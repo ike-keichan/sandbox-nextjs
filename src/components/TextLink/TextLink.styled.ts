@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { COLORS } from '~/shared/const/colors';
 
-export const TextLinkRoot = styled(Link)`
+// サイトの中へのリンクと、外へのリンクで、同じスタイルを使う
+const linkStyle = css`
   border-radius: 2px;
   color: ${COLORS.PRIMARY};
   text-decoration: underline;
@@ -21,13 +22,22 @@ export const TextLinkRoot = styled(Link)`
 `;
 
 /**
-画面には表示せず、読み上げソフトにだけ伝える文字
-*/
-export const VisuallyHidden = styled.span`
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
+ * サイトの中のページへのリンク。ページ全体を読み込み直さずに、移動する
+ */
+export const InternalLink = styled(Link)`
+  ${linkStyle}
+`;
+
+/**
+ * 外へのリンク。ふつうの a 要素
+ */
+export const ExternalLink = styled.a`
+  ${linkStyle}
+`;
+
+/**
+ * 新しいタブで開くことを表す記号
+ */
+export const ExternalMark = styled.span`
+  margin-left: 2px;
 `;

@@ -29,8 +29,3 @@ export const Row = styled.div`
   flex-wrap: wrap;
   gap: 12px;
 `;
-
-export const Form = styled.form`
-  display: grid;
-  gap: 16px;
-`;
