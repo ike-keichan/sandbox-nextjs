@@ -15,6 +15,85 @@ updates:
       # TypeScript のメジャーバージョンは、検査の道具（typescript-eslint）が対応してから、手で上げる。
       - dependency-name: typescript
         update-types: ['version-update:semver-major']
+  # 組み合わせのブランチにだけ入っているパッケージ（検査、テスト、スタイルの道具）
+  # Dependabot は、指定しなければ main しか見ない。ブランチごとに、対象を足している。
+  # main にもあるパッケージ（Next.js、React、TypeScript など）は、main で上げてから取り込むので、ここでは対象から外す。
+  - package-ecosystem: npm
+    directory: /
+    target-branch: example/pages-styled-eslint-jest
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Tokyo
+    groups:
+      javascript:
+        patterns: ['*']
+    ignore:
+      - dependency-name: next
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: typescript
+      - dependency-name: '@types/node'
+      - dependency-name: '@types/react'
+      - dependency-name: '@types/react-dom'
+  - package-ecosystem: npm
+    directory: /
+    target-branch: example/app-cssmodules-eslint-vitest
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Tokyo
+    groups:
+      javascript:
+        patterns: ['*']
+    ignore:
+      - dependency-name: next
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: typescript
+      - dependency-name: '@types/node'
+      - dependency-name: '@types/react'
+      - dependency-name: '@types/react-dom'
+  - package-ecosystem: npm
+    directory: /
+    target-branch: example/app-tailwind-eslint-vitest
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Tokyo
+    groups:
+      javascript:
+        patterns: ['*']
+    ignore:
+      - dependency-name: next
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: typescript
+      - dependency-name: '@types/node'
+      - dependency-name: '@types/react'
+      - dependency-name: '@types/react-dom'
+  - package-ecosystem: npm
+    directory: /
+    target-branch: example/app-tailwind-biome-vitest
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Tokyo
+    groups:
+      javascript:
+        patterns: ['*']
+    ignore:
+      - dependency-name: next
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: typescript
+      - dependency-name: '@types/node'
+      - dependency-name: '@types/react'
+      - dependency-name: '@types/react-dom'
   # Node.js のイメージ（Dockerfile）
   - package-ecosystem: docker
     directory: /
